@@ -14,9 +14,7 @@ class Strategy:
         self.backtester = Backtester(pair, start, end)
 
     def prepare_backtesting_data(self, timeframe):
-        self.main_timeframe = timeframe
-        self.bt_main_candles = self.backtester.get_tf_candles(
-            self.main_timeframe)
+        pass
 
     def backtest(self):
         pass
