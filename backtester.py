@@ -1,19 +1,19 @@
-import helper as h
-from helper import M1
-from pricedata import PriceData
-from trade import Trade
+import algotrading.helper as h
+from algotrading.pricedata import PriceData
+from algotrading.trade import Trade
 from pandas import DataFrame
 
 
 class Backtester():
     def __init__(self, pair, start, end):
         self.__price_data = PriceData(pair, start, end)
+        self.outcome_candles = self.get_tf_candles(h.M1)
         self.max_w_streak = 0
         self.max_l_streak = 0
         self.w_streak = 0
         self.l_streak = 0
         self.number_of_trades = 0
-        self.outcome_candles = self.get_tf_candles(M1)
+        self.account_size = 100
         self.trades = []
 
     def get_tf_candles(self, timeframe: str) -> DataFrame:
@@ -23,19 +23,20 @@ class Backtester():
         # filter = self.outcome_candles.index == trade.open_time
         # minute_candle = self.outcome_candles[filter]
         index_number = self.outcome_candles.index.get_loc(trade.open_time)
-        while trade.get_result() is None:
+        while trade.result is None:
             trade.update_trade(self.outcome_candles.iloc[index_number])
             index_number += 1
 
         trade.set_close_time(self.outcome_candles.iloc[index_number-1].name)
-        self.update_streaks(trade.get_result())
+        self.update_streaks(trade.result)
+        self.update_account_size(trade)
         self.add_trade(trade)
 
     def update_streaks(self, trade_result):
         if trade_result == "loss":
             self.update_streaks_on_lost_trade()
         elif trade_result == "profit":
-            self.update_streak_on_won_trade()
+            self.update_streaks_on_won_trade()
         self.number_of_trades += 1
 
     def update_streaks_on_lost_trade(self):
@@ -43,10 +44,16 @@ class Backtester():
         self.l_streak += 1
         self.w_streak = 0
 
-    def update_streak_on_won_trade(self):
+    def update_streaks_on_won_trade(self):
         self.max_l_streak = max(self.max_l_streak, self.l_streak)
         self.w_streak += 1
         self.l_streak = 0
+
+    def update_account_size(self, trade: Trade):
+        if trade.result == "loss":
+            self.account_size -= 0.01 * self.account_size
+        else:
+            self.account_size += trade.risk_to_reward * 0.01 * self.account_size
 
     def add_trade(self, trade):
         self.trades.append(trade)

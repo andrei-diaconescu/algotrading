@@ -52,8 +52,6 @@ class Trade:
                 f"Position type value must be either \"LONG\" or \"SHORT\". Actual value: {side}")
         self.side = side
 
-    def get_result(self):
-        return self.result
 
     def check_price_value(self, price: float):
         if price <= 0:

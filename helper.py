@@ -2,7 +2,7 @@ from typing import List
 import pandas as pd
 from pandas import DataFrame
 
-from trade import Trade
+from algotrading.trade import Trade
 
 M1 = "1m"
 M3 = "3m"
