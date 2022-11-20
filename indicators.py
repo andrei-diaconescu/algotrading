@@ -1,6 +1,8 @@
 from pandas import DataFrame, Series
 # ----- Parabolic Stop & Reverse -----
 
+RSI_EQUILIBRIUM_POINT = 50
+
 
 def get_sar_trend(sar: DataFrame, last_candle: Series):
     if sar.iloc[-1] >= sar.iloc[-2] and sar.iloc[-1] < last_candle.low:
@@ -105,3 +107,31 @@ def emas_are_ascending(*emas: float):
         if ltf_ema > htf_ema:
             return False
     return True
+
+# ----- Candle Patterns ------
+
+def is_engulfing():
+    return True
+
+def candle_is_green(candle: Series):
+    return candle.close > candle.open
+
+def candle_is_engulfing(first_candle, engufling_candle):
+    return abs(engufling_candle.close - engufling_candle.open) > abs(first_candle.close - first_candle.open)
+
+# ----- Relative Strength Index ------
+
+def rsi_is_at_equilibrium(rsi_value) -> bool:
+    return abs(rsi_value - RSI_EQUILIBRIUM_POINT) < 2
+
+def get_rsi_trend(rsi_value) -> str:
+    if rsi_value < RSI_EQUILIBRIUM_POINT:
+        return "SHORT"
+    else:
+        return "LONG"
+
+def rsi_is_oversold(rsi_value) -> bool:
+    return rsi_value < 30
+
+def rsi_is_overbought(rsi_value) -> bool:
+    return rsi_value > 70
