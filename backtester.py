@@ -20,8 +20,6 @@ class Backtester():
         return self.__price_data.get_candles(timeframe)
 
     def backtest_trade(self, trade: Trade):
-        # filter = self.outcome_candles.index == trade.open_time
-        # minute_candle = self.outcome_candles[filter]
         index_number = self.outcome_candles.index.get_loc(trade.open_time)
         while trade.result is None:
             trade.update_trade(self.outcome_candles.iloc[index_number])

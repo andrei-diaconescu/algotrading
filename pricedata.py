@@ -41,7 +41,6 @@ class PriceData:
         candles_df.columns = ['time', 'open', 'high', 'low', 'close', 'volume']
         candles_df['time'] = pd.to_datetime(candles_df['time'], unit='ms')
         candles_df.set_index('time', inplace=True)
-        print(candles_df.columns)
         candles_df = candles_df.astype(float)
         return candles_df
 
