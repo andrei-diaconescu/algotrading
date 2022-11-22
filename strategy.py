@@ -33,6 +33,3 @@ class Strategy:
 
     def calc_stop_loss(self, **kwargs) -> float:
         pass
-
-    def conditions_are_met(self, **kwargs) -> bool:
-        pass

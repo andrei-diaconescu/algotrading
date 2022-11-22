@@ -4,7 +4,7 @@ from algotrading.trade import Trade
 from pandas import DataFrame
 
 
-class Backtester():
+class Backtester:
     def __init__(self, pair, start, end):
         self.__price_data = PriceData(pair, start, end)
         self.outcome_candles = self.get_tf_candles(h.M1)
@@ -25,12 +25,12 @@ class Backtester():
             trade.update_trade(self.outcome_candles.iloc[index_number])
             index_number += 1
 
-        trade.set_close_time(self.outcome_candles.iloc[index_number-1].name)
+        trade.set_close_time(self.outcome_candles.iloc[index_number - 1].name)
         self.update_streaks(trade.result)
         self.update_account_size(trade)
         self.add_trade(trade)
 
-    def update_streaks(self, trade_result):
+    def update_streaks(self, trade_result: str):
         if trade_result == "loss":
             self.update_streaks_on_lost_trade()
         elif trade_result == "profit":
