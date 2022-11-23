@@ -1,16 +1,17 @@
 from pandas import DataFrame, Series
+from algotrading.trend import Trend
 
 # ----- Parabolic Stop & Reverse -----
 
 RSI_EQUILIBRIUM_POINT = 50
 
 
-def get_sar_trend(sar: DataFrame, last_candle: Series) -> str | None:
+def get_sar_trend(sar: DataFrame, last_candle: Series) -> Trend:
     if sar.iloc[-1] >= sar.iloc[-2] and sar.iloc[-1] < last_candle.low:
-        return "LONG"
+        return Trend.LONG
     if sar.iloc[-1] <= sar.iloc[-2] and sar.iloc[-1] > last_candle.high:
-        return "SHORT"
-    return None
+        return Trend.SHORT
+    return Trend.NONE
 
 
 def get_last_sar_trend_length(sar: DataFrame, trend: str) -> int:
@@ -18,9 +19,9 @@ def get_last_sar_trend_length(sar: DataFrame, trend: str) -> int:
     last_sar_val = sar[-1]
 
     for sar_val in reversed(sar):
-        if trend == "LONG" and sar_val > last_sar_val:
+        if trend == Trend.LONG and sar_val > last_sar_val:
             return sar_trend_length
-        elif trend == "SHORT" and sar_val < last_sar_val:
+        elif trend == Trend.SHORT and sar_val < last_sar_val:
             return sar_trend_length
 
         sar_trend_length += 1
@@ -32,26 +33,7 @@ def get_last_sar_trend_length(sar: DataFrame, trend: str) -> int:
 # ----- Stoch Relative Index Strength -----
 
 
-def get_stochrsi_reversal_trend(
-    fastk_pair: DataFrame, fastd_pair: DataFrame
-) -> str | None:
-    previous_k, current_k = fastk_pair.iloc[0], fastk_pair.iloc[1]
-    previous_d, current_d = fastd_pair.iloc[0], fastd_pair.iloc[1]
-
-    if stochrsi_is_oversold(previous_k, current_k):
-        if not stochrsi_is_rising(previous_k, previous_d) and stochrsi_is_rising(
-            current_k, current_d
-        ):
-            return "LONG"
-    elif stochrsi_is_overbought(previous_k, current_k):
-        if stochrsi_is_rising(previous_k, previous_d) and not stochrsi_is_rising(
-            current_k, current_d
-        ):
-            return "SHORT"
-    return None
-
-
-def get_stochrsi_reversal_trend_v2(stoch_rsi: DataFrame) -> str | None:
+def get_stochrsi_reversal_trend(stoch_rsi: DataFrame) -> Trend:
     previous_k, current_k = stoch_rsi.fastk.iloc[0], stoch_rsi.fastk.iloc[1]
     previous_d, current_d = stoch_rsi.fastd.iloc[0], stoch_rsi.fastd.iloc[1]
 
@@ -59,13 +41,13 @@ def get_stochrsi_reversal_trend_v2(stoch_rsi: DataFrame) -> str | None:
         if not stochrsi_is_rising(previous_k, previous_d) and stochrsi_is_rising(
             current_k, current_d
         ):
-            return "LONG"
+            return Trend.LONG
     elif stochrsi_is_overbought(previous_k, current_k):
         if stochrsi_is_rising(previous_k, previous_d) and not stochrsi_is_rising(
             current_k, current_d
         ):
-            return "SHORT"
-    return None
+            return Trend.SHORT
+    return Trend.NONE
 
 
 def is_first_stochrsi_reversal(fastk, fastd, reversal_trend: str) -> bool:
@@ -147,11 +129,11 @@ def rsi_is_at_equilibrium(rsi_value) -> bool:
     return abs(rsi_value - RSI_EQUILIBRIUM_POINT) < 2
 
 
-def get_rsi_trend(rsi_value) -> str:
+def get_rsi_trend(rsi_value) -> Trend:
     if rsi_value < RSI_EQUILIBRIUM_POINT:
-        return "SHORT"
+        return Trend.SHORT
     else:
-        return "LONG"
+        return Trend.LONG
 
 
 def rsi_is_oversold(rsi_value) -> bool:

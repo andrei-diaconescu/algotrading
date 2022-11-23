@@ -1,7 +1,6 @@
 from typing import List
 import pandas as pd
 from pandas import DataFrame
-
 from algotrading.trade import Trade
 
 M1 = "1m"

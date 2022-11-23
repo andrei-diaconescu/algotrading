@@ -1,4 +1,5 @@
 from pandas import DataFrame
+from algotrading.trend import Trend
 
 
 class Trade:
@@ -48,10 +49,9 @@ class Trade:
         self.position_size = position_size
 
     def set_side(self, side: str):
-        side = side.upper()
-        if side != "LONG" and side != "SHORT":
+        if side != Trend.LONG and side != Trend.SHORT:
             raise ValueError(
-                f'Position type value must be either "LONG" or "SHORT". Actual value: {side}'
+                f"Position side value must be either Trend.LONG or Trend.SHORT. Actual value: {side}"
             )
         self.side = side
 
@@ -94,7 +94,7 @@ class Trade:
 
     def update_trade(self, candle):
         if self.result is None:
-            if self.side == "LONG":
+            if self.side == Trend.LONG:
                 self.update_long_result(candle)
             else:
                 self.update_short_result(candle)
@@ -123,13 +123,13 @@ class Trade:
             self.result = "loss"
 
     def update_drawdown_price(self, candle):
-        if self.side == "LONG":
+        if self.side == Trend.LONG:
             self.drawdown_price = min(candle.low, self.drawdown_price)
         else:
             self.drawdown_price = max(candle.high, self.drawdown_price)
 
     def update_peek_price(self, candle):
-        if self.side == "LONG":
+        if self.side == Trend.LONG:
             self.peek_price = max(candle.high, self.peek_price)
         else:
             self.peek_price = min(candle.low, self.drawdown_price)
