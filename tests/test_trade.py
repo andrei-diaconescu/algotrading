@@ -1,5 +1,6 @@
 import pandas as pd
 from algotrading.trade import Trade
+from algotrading.trend import Trend
 
 ENTRY = 100
 SL = 99
@@ -7,7 +8,7 @@ TP = 101
 
 
 def test_peek_and_drawdown():
-    trade = Trade(ENTRY, "LONG", "2022-10-01 01:30:00", sl_price=SL, tp_price=TP)
+    trade = Trade(ENTRY, Trend.LONG, "2022-10-01 01:30:00", sl_price=SL, tp_price=TP)
     assert trade.drawdown_price == 100
     assert trade.peek_price == 100
     assert trade.drawdown == 0
