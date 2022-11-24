@@ -1,13 +1,14 @@
 import algotrading.helper as h
 from algotrading.pricedata import PriceData
 from algotrading.trade import Trade
+from algotrading.timeframe import Timeframe
 from pandas import DataFrame
 
 
 class Backtester:
     def __init__(self, pair, start, end):
         self.__price_data = PriceData(pair, start, end)
-        self.outcome_candles = self.get_tf_candles(h.M1)
+        self.outcome_candles = self.get_tf_candles(Timeframe.M1)
         self.max_w_streak = 0
         self.max_l_streak = 0
         self.w_streak = 0
@@ -16,7 +17,7 @@ class Backtester:
         self.account_size = 100
         self.trades = []
 
-    def get_tf_candles(self, timeframe: str) -> DataFrame:
+    def get_tf_candles(self, timeframe: Timeframe) -> DataFrame:
         return self.__price_data.get_candles(timeframe)
 
     def backtest_trade(self, trade: Trade):

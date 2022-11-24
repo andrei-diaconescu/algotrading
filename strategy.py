@@ -1,11 +1,14 @@
 from algotrading.backtester import Backtester
+from algotrading.timeframe import Timeframe
 
 
 class Strategy:
     def __init__(self, **kwargs) -> None:
         pass
 
-    def backtest_pair_and_period(self, timeframe: str, pair: str, start: str, end: str):
+    def backtest_pair_and_period(
+        self, timeframe: Timeframe, pair: str, start: str, end: str
+    ):
         self.initialize_backtester(pair, start, end)
         self.prepare_backtesting_data(timeframe)
         self.backtest()
@@ -13,7 +16,7 @@ class Strategy:
     def initialize_backtester(self, pair, start, end):
         self.backtester = Backtester(pair, start, end)
 
-    def prepare_backtesting_data(self, timeframe):
+    def prepare_backtesting_data(self, timeframe: Timeframe):
         pass
 
     def backtest(self):
