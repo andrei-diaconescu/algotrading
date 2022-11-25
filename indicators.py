@@ -7,9 +7,9 @@ RSI_EQUILIBRIUM_POINT = 50
 
 
 def get_sar_trend(sar: DataFrame, last_candle: Series) -> Trend:
-    if sar.iloc[-1] >= sar.iloc[-2] and sar.iloc[-1] < last_candle.low:
+    if sar.iloc[-2] <= sar.iloc[-1] < last_candle.low:
         return Trend.LONG
-    if sar.iloc[-1] <= sar.iloc[-2] and sar.iloc[-1] > last_candle.high:
+    if sar.iloc[-2] >= sar.iloc[-1] > last_candle.high:
         return Trend.SHORT
     return Trend.NONE
 
