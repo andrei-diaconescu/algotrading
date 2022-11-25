@@ -23,6 +23,20 @@ class Timeframe(Enum):
     W1 = "1w"
     MO1 = "1M"
 
+    @property
+    def primary_timeframes(self):
+        return [
+            self.M15,
+            self.H1,
+            self.H2,
+            self.H4,
+            self.H6,
+            self.H8,
+            self.H12,
+            self.D1,
+            self.D3,
+        ]
+
     def to_number_of_minutes(self) -> int:
         value = self.value
         if "m" in value:
