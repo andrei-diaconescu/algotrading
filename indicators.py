@@ -84,7 +84,7 @@ def stochrsi_is_overbought(*fastks) -> bool:
 def emas_are_descending(*emas: float):
     """ "Verifies if the given EMAs are in descending order
     Used to determine bullish market structure"""
-    htf_ema = 0
+    htf_ema = emas[0] * 2
     for ema in emas:
         ltf_ema = htf_ema
         htf_ema = ema
@@ -108,15 +108,13 @@ def emas_are_ascending(*emas: float):
 # ----- Candle Patterns ------
 
 
-def is_engulfing():
-    return True
-
-
 def candle_is_green(candle: Series):
     return candle.close > candle.open
 
 
-def candle_is_engulfing(first_candle, engufling_candle):
+def candle_is_engulfing(first_candle: Series, engufling_candle: Series):
+    if candle_is_green(first_candle) == candle_is_green(engufling_candle):
+        return False
     return abs(engufling_candle.close - engufling_candle.open) > abs(
         first_candle.close - first_candle.open
     )
@@ -125,20 +123,20 @@ def candle_is_engulfing(first_candle, engufling_candle):
 # ----- Relative Strength Index ------
 
 
-def rsi_is_at_equilibrium(rsi_value) -> bool:
+def rsi_is_at_equilibrium(rsi_value: float) -> bool:
     return abs(rsi_value - RSI_EQUILIBRIUM_POINT) < 2
 
 
-def get_rsi_trend(rsi_value) -> Trend:
+def get_rsi_trend(rsi_value: float) -> Trend:
     if rsi_value < RSI_EQUILIBRIUM_POINT:
         return Trend.SHORT
     else:
         return Trend.LONG
 
 
-def rsi_is_oversold(rsi_value) -> bool:
+def rsi_is_oversold(rsi_value: float) -> bool:
     return rsi_value < 30
 
 
-def rsi_is_overbought(rsi_value) -> bool:
+def rsi_is_overbought(rsi_value: float) -> bool:
     return rsi_value > 70
