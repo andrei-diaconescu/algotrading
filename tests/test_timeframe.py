@@ -2,55 +2,95 @@ from algotrading.timeframe import Timeframe
 import pytest
 
 
-def test_get_timeframe_index_from_other() -> None:
-    def assert_get_timeframe_index_from_other_with_result(
-        requested_timeframe: Timeframe,
-        provided_timeframe: Timeframe,
-        provided_index,
-        result_index,
-    ):
-        assert (
-            provided_timeframe.from_index_to_other_timeframe_index(
-                provided_index, requested_timeframe
-            )
-            == result_index
+def test_list() -> None:
+    expected = [
+        "1m",
+        "3m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "4h",
+        "6h",
+        "8h",
+        "12h",
+        "1d",
+        "3d",
+        "1w",
+        "1M",
+    ]
+    assert Timeframe.list() == expected
+
+
+def test_primary_timeframes_property() -> None:
+    expected = [
+        "15m",
+        "1h",
+        "2h",
+        "4h",
+        "6h",
+        "8h",
+        "12h",
+        "1d",
+        "3d",
+    ]
+    assert Timeframe.primary_timeframes() == expected
+
+
+@pytest.mark.parametrize(
+    "provided_timeframe, provided_index, requested_timeframe, expected_index",
+    [
+        #  LTF - HTF
+        (Timeframe.M1, 50, Timeframe.M5, 10),
+        (Timeframe.M1, 4, Timeframe.M5, 0),
+        (Timeframe.M1, 45, Timeframe.M5, 9),
+        (Timeframe.M1, 50, Timeframe.M30, 1),
+        (Timeframe.M1, 50, Timeframe.H1, 0),
+        (Timeframe.M1, 50, Timeframe.H2, 0),
+        (Timeframe.H4, 20, Timeframe.W1, 0),
+        #  HTF -> LTF
+        (Timeframe.H4, 3, Timeframe.H2, 6),
+        (Timeframe.H1, 3, Timeframe.M5, 36),
+        (Timeframe.M3, 3, Timeframe.M1, 9),
+        (Timeframe.W1, 2, Timeframe.D1, 14),
+    ],
+)
+def test_get_timeframe_index_from_other(
+    provided_timeframe: Timeframe,
+    provided_index: int,
+    requested_timeframe: Timeframe,
+    expected_index: int,
+) -> None:
+    assert (
+        provided_timeframe.from_index_to_other_timeframe_index(
+            provided_index, requested_timeframe
         )
-
-    # LTF -> HTF
-    assert_get_timeframe_index_from_other_with_result(
-        Timeframe.M5, Timeframe.M1, 50, 10
+        == expected_index
     )
-    assert_get_timeframe_index_from_other_with_result(Timeframe.M5, Timeframe.M1, 4, 0)
-    assert_get_timeframe_index_from_other_with_result(Timeframe.M5, Timeframe.M1, 45, 9)
-    assert_get_timeframe_index_from_other_with_result(
-        Timeframe.M30, Timeframe.M1, 50, 1
-    )
-    assert_get_timeframe_index_from_other_with_result(Timeframe.H1, Timeframe.M1, 50, 0)
-    assert_get_timeframe_index_from_other_with_result(Timeframe.H2, Timeframe.M1, 50, 0)
-    assert_get_timeframe_index_from_other_with_result(Timeframe.W1, Timeframe.H4, 20, 0)
-    #  HTF -> LTF
-    assert_get_timeframe_index_from_other_with_result(Timeframe.H2, Timeframe.H4, 3, 6)
-    assert_get_timeframe_index_from_other_with_result(Timeframe.M5, Timeframe.H1, 3, 36)
-    assert_get_timeframe_index_from_other_with_result(Timeframe.M1, Timeframe.M3, 3, 9)
-    assert_get_timeframe_index_from_other_with_result(Timeframe.D1, Timeframe.W1, 2, 14)
 
-    def test_next_timeframe() -> None:
-        assert Timeframe.M1.next_timeframe() == Timeframe.M3
-        assert Timeframe.M3.next_timeframe() == Timeframe.M5
-        assert Timeframe.M5.next_timeframe() == Timeframe.M15
-        assert Timeframe.M15.next_timeframe() == Timeframe.M30
-        assert Timeframe.M30.next_timeframe() == Timeframe.H1
-        assert Timeframe.H1.next_timeframe() == Timeframe.H2
-        assert Timeframe.H2.next_timeframe() == Timeframe.H4
-        assert Timeframe.H4.next_timeframe() == Timeframe.H6
-        assert Timeframe.H6.next_timeframe() == Timeframe.H8
-        assert Timeframe.H8.next_timeframe() == Timeframe.H12
-        assert Timeframe.H12.next_timeframe() == Timeframe.D1
-        assert Timeframe.D1.next_timeframe() == Timeframe.D3
-        assert Timeframe.D3.next_timeframe() == Timeframe.W1
-        assert Timeframe.W1.next_timeframe() == Timeframe.MO1
 
-        with pytest.raises(
-            ValueError("There is no higher timeframe than Monthly candles.")
-        ):
-            Timeframe.MO1.next_timeframe()
+@pytest.mark.parametrize(
+    "first_timeframe,next_timeframe",
+    [
+        (Timeframe.M1, Timeframe.M3),
+        (Timeframe.M3, Timeframe.M5),
+        (Timeframe.M5, Timeframe.M15),
+        (Timeframe.M15, Timeframe.M30),
+        (Timeframe.M30, Timeframe.H1),
+        (Timeframe.H1, Timeframe.H2),
+        (Timeframe.H2, Timeframe.H4),
+        (Timeframe.H4, Timeframe.H6),
+        (Timeframe.H6, Timeframe.H8),
+        (Timeframe.H8, Timeframe.H12),
+        (Timeframe.H12, Timeframe.D1),
+        (Timeframe.D1, Timeframe.D3),
+        (Timeframe.D3, Timeframe.W1),
+        (Timeframe.W1, Timeframe.MO1),
+    ],
+)
+def test_next_timeframe(first_timeframe: Timeframe, next_timeframe: Timeframe) -> None:
+    assert first_timeframe.next_timeframe() == next_timeframe
+
+    with pytest.raises(ValueError):
+        Timeframe.MO1.next_timeframe()
