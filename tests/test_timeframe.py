@@ -92,5 +92,7 @@ def test_get_timeframe_index_from_other(
 def test_next_timeframe(first_timeframe: Timeframe, next_timeframe: Timeframe) -> None:
     assert first_timeframe.next_timeframe() == next_timeframe
 
+
+def test_next_timeframe_month():
     with pytest.raises(ValueError):
         Timeframe.MO1.next_timeframe()
