@@ -23,19 +23,33 @@ class Timeframe(Enum):
     W1 = "1w"
     MO1 = "1M"
 
-    @property
+    @classmethod
+    def list(cls):
+        return [e.value for e in cls]
+
+    @classmethod
     def primary_timeframes(self):
         return [
-            self.M15,
-            self.H1,
-            self.H2,
-            self.H4,
-            self.H6,
-            self.H8,
-            self.H12,
-            self.D1,
-            self.D3,
+            self.M15.value,
+            self.H1.value,
+            self.H2.value,
+            self.H4.value,
+            self.H6.value,
+            self.H8.value,
+            self.H12.value,
+            self.D1.value,
+            self.D3.value,
         ]
+
+    def from_index_to_other_timeframe_index(
+        self, provided_index: int, requested_timeframe: Timeframe
+    ) -> int:
+        provided_tf_multiplier = self.to_number_of_minutes()
+        requested_tf_multiplier = requested_timeframe.to_number_of_minutes()
+        requested_index = int(
+            provided_index * provided_tf_multiplier / requested_tf_multiplier
+        )
+        return requested_index
 
     def to_number_of_minutes(self) -> int:
         value = self.value
@@ -48,16 +62,6 @@ class Timeframe(Enum):
         elif "w" in value:
             return int(value.replace("w", "")) * MIN_IN_H * H_IN_D * D_IN_W
         return 0
-
-    def from_index_to_other_timeframe_index(
-        self, provided_index: int, requested_timeframe: Timeframe
-    ) -> int:
-        provided_tf_multiplier = self.to_number_of_minutes()
-        requested_tf_multiplier = requested_timeframe.to_number_of_minutes()
-        requested_index = int(
-            provided_index * provided_tf_multiplier / requested_tf_multiplier
-        )
-        return requested_index
 
     def next_timeframe(self) -> Timeframe:
         if self is Timeframe.MO1:
