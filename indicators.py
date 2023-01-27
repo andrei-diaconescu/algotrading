@@ -60,22 +60,22 @@ def is_first_stochrsi_reversal(fastk, fastd, reversal_trend: str) -> bool:
     return True
 
 
-def stochrsi_is_rising(fastk, fastd) -> bool:
+def stochrsi_is_rising(fastk: float, fastd: float) -> bool:
     return fastk > fastd
 
 
-def stochrsi_is_oversold(*fastks) -> bool:
+def stochrsi_is_oversold(*fastks: float) -> bool:
     for k in fastks:
-        if k < 20:
-            return True
-    return False
+        if k >= 20:
+            return False
+    return True
 
 
-def stochrsi_is_overbought(*fastks) -> bool:
+def stochrsi_is_overbought(*fastks: float) -> bool:
     for k in fastks:
-        if k > 80:
-            return True
-    return False
+        if k <= 80:
+            return False
+    return True
 
 
 # ----- Exponential Moving Average ------
