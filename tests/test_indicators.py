@@ -3,6 +3,71 @@ import algotrading.indicators as i
 from algotrading.trend import Trend
 import pandas as pd
 
+# ----- Stoch Relative Index Strength -----
+
+
+@pytest.mark.parametrize(
+    "fastk, fastd, expected",
+    [
+        (12, 13, False),
+        (13, 13, False),
+        (27, 13, True),
+    ],
+)
+def test_stochrsi_is_rising(fastk, fastd, expected):
+    assert i.stochrsi_is_rising(fastk, fastd) == expected
+
+
+@pytest.mark.parametrize(
+    "stochrsi_val,expected",
+    [
+        (0, True),
+        (19.9999, True),
+        (20, False),
+        (53, False),
+    ],
+)
+def test_single_stochrsi_is_oversold(stochrsi_val, expected):
+    assert i.stochrsi_is_oversold(stochrsi_val) == expected
+
+
+@pytest.mark.parametrize(
+    "stochrsi_values,expected",
+    [
+        ([20, 50], False),
+        ([14, 20], False),
+        ([13.7, 17.34], True),
+    ],
+)
+def test_multiple_stochrsi_is_oversold(stochrsi_values, expected):
+    assert i.stochrsi_is_oversold(*stochrsi_values) == expected
+
+
+@pytest.mark.parametrize(
+    "stochrsi_val,expected",
+    [
+        (0, False),
+        (79.9999999, False),
+        (80, False),
+        (93, True),
+    ],
+)
+def test_single_stochrsi_is_overbought(stochrsi_val, expected):
+    assert i.stochrsi_is_overbought(stochrsi_val) == expected
+
+
+@pytest.mark.parametrize(
+    "stochrsi_values,expected",
+    [
+        ([30, 80], False),
+        ([80, 81], False),
+        ([83, 97], True),
+    ],
+)
+def test_multiple_stochrsi_is_overbought(stochrsi_values, expected):
+    assert i.stochrsi_is_overbought(*stochrsi_values) == expected
+
+
 # ----- Exponential Moving Average ------
 
 
